@@ -1,14 +1,98 @@
+# ===================================================================
+# OpenID Connect Settings. Default settings are for Keycloak in Docker.
+# Start Keycloak using `docker-compose -f src/main/docker/keycloak.yml up`.
+#
+# To use Okta, your settings should resemble the following:
+#
+# accessTokenUri: https://{yourOktaDomain}.com/oauth2/default/v1/token
+# userAuthorizationUri: https://{yourOktaDomain}.com/oauth2/default/v1/authorize
+# clientId: {copy after creating an OIDC app}
+# clientSecret: {copy after creating an OIDC app}
+# userInfoUri: https://{yourOktaDomain}.com/oauth2/default/v1/userinfo
+# tokenInfoUri: https://{yourOktaDomain}.com/oauth2/default/v1/introspect
+#
+# You can also override these properties using environment variables.
+# For example:
+#
+# export SECURITY_OAUTH2_CLIENT_CLIENT_ID="jhipster"
+# export SECURITY_OAUTH2_CLIENT_CLIENT_SECRET="38561a05"
+# ===================================================================
+
+#spring:
+#    security:
+#        oauth2:
+#            client:
+#                provider:
+#                    oidc:
+#                        issuer-uri: https://keycloak:8543/auth/realms/registry
+#                # Attention: Without this there will be no bean of type OAuth2AuthorizedClientService
+#                registration:
+#                    oidc:
+#                        client-id: registry
+#                        client-secret: 246777c9-03f9-4ff5-8f13-430fd4944e33
+
+# Attention: Without this there is the obscure 'Not a URI because there is not client' error'
+# Hence some values are placed 2-times in configuration.
+#security:
+#    oauth2:
+#        client:
+#            access-token-uri: https://keycloak:8543/auth/realms/registry/protocol/openid-connect/token
+#            user-authorization-uri: https://keycloak:8543/auth/realms/registry/protocol/openid-connect/auth
+#            client-id: registry
+#            client-secret: 246777c9-03f9-4ff5-8f13-430fd4944e33
+#            # authentication-scheme: header
+#            # client-authentication-scheme: header
+#            # scope: openid profile email
+#        resource:
+#            # filter-order: 3
+#            user-info-uri: https://keycloak:8543/auth/realms/registry/protocol/openid-connect/userinfo
+#            token-info-uri: https://keycloak:8543/auth/realms/registry/protocol/openid-connect/token/introspect
+#            prefer-token-info: false
+#            # jwt:
+#            #   key-uri: https://keycloak:8543/auth/realms/registry
+
+
+kc:
+    # base-url: http://localhost:8080/auth
+    base-url: https://keycloak:8543/auth
+    realm: registry
+    realm-url: ${kc.base-url}/realms/${kc.realm}
+
 spring:
     security:
         oauth2:
             client:
-                provider:
-                    oidc:
-                        issuer-uri: http://localhost:9080/auth/realms/jhipster
                 registration:
-                    oidc:
-                        client-id: jhipster-registry
-                        client-secret: jhipster-registry
+                    registry:
+                        client-name: Keycloak-Qs-Registry
+                        client-id: registry
+                        client-secret: 246777c9-03f9-4ff5-8f13-430fd4944e33
+                        provider: keycloak
+                        authorization-grant-type: authorization_code
+                        scope: openid, profile
+                        redirect-uri-template: "{baseUrl}/login/oauth2/code/{registrationId}"
+                        # redirect-uri-template: "{baseUrl}/#/applications"
+                        # redirect-uri-template: "{baseUrl}/#/"
+                provider:
+                    keycloak:
+                        authorization-uri: ${kc.realm-url}/protocol/openid-connect/auth
+                        jwk-set-uri: ${kc.realm-url}/protocol/openid-connect/certs
+                        token-uri: ${kc.realm-url}/protocol/openid-connect/token
+                        #
+                        # without user-info-uri, no user-info is retrieved and GrantedAuthorities are always set to ["ROLE_USER"]
+                        # however, user-info is retrieved only if scopes contains at least one of 'profile, email, address, phone'
+                        # (see OidcUserService.shouldRetrieveUserInfo for details)
+                        #
+                        # another problem is that the access token returned by kc normally only contains 'openid'
+                        # (see OAuth2AccessTokenResponseHttpMessageConverter.OAuth2AccessTokenResponseConverter.convert for details)
+                        #
+                        #  Maybe the user info endpoint is not needed since Keycloak can use self-contained value tokens
+                        #  Well, this is configurable in kc and you could decide against it (and I _have_ decided against)
+                        user-info-uri: ${kc.realm-url}//protocol/openid-connect/userinfo
+
+                        # would be cool if there was a end-session-uri to propagate logouts
+
+                        user-name-attribute: preferred_username
 
 server:
     servlet:
