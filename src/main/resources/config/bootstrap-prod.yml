@@ -9,10 +9,16 @@ spring:
     cloud:
         config:
             server:
-                bootstrap: true
+#                bootstrap: false
+                # bootstrap=true AND composite
+                bootstap: true
                 composite:
                     - type: git
                       uri: https://github.com/jhipster/jhipster-registry-sample-config
+#                    - type: file
+#                      uri: file:./central-config
+#                native:
+#                    search-locations: file:./central-config
                 prefix: /config
             fail-fast: true
             # name of the config server's property source (file.yml) that we want to use

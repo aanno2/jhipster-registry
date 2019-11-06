@@ -13,8 +13,8 @@ spring:
         config:
             server:
                 name: jhipster-registry
-#                git:
-#                    uri: https://gitlab:943/microservice-configuration.git
+                git:
+                    uri: https://gitlab:943/microservice-configuration.git
                 native:
                     search-locations: file:./central-config
                 prefix: /config

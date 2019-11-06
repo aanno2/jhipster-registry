@@ -53,9 +53,9 @@
 
 
 kc:
-    # base-url: http://localhost:8080/auth
-    base-url: https://keycloak:8543/auth
-    realm: registry
+    base-url: http://localhost:8080/auth
+    # base-url: https://keycloak:8543/auth
+    realm: jhipster
     realm-url: ${kc.base-url}/realms/${kc.realm}
 
 spring:
@@ -64,9 +64,9 @@ spring:
             client:
                 registration:
                     registry:
-                        client-name: Keycloak-Qs-Registry
-                        client-id: registry
-                        client-secret: 246777c9-03f9-4ff5-8f13-430fd4944e33
+                        client-name: JHipster-Registry-Localhost
+                        client-id: jhipster-registry
+                        client-secret: 1bc30319-d785-48cf-9a32-b41f13aefc3b
                         provider: keycloak
                         authorization-grant-type: authorization_code
                         scope: openid, profile
