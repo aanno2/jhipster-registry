@@ -58,6 +58,12 @@ kc:
     realm: jhipster
     realm-url: ${kc.base-url}/realms/${kc.realm}
 
+oauth2:
+    # UAA
+    # audience: messaging
+    # kc
+    audience: account
+
 spring:
     security:
         oauth2:
