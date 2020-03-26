@@ -20,38 +20,44 @@ logging:
     io.github.jhipster.registry: INFO
 
 spring:
+  profiles:
+    active: prod
+    include:
+      - swagger
+      - oauth2
+      - keycloak
+      - zipkin
+      # Uncomment to activate TLS for the dev profile
+      #- tls
   devtools:
     restart:
       enabled: false
     livereload:
       enabled: false
-  thymeleaf:
-    cache: true
+  mail:
+    host: localhost
+    port: 25
+    username:
+    password:
   security:
     user:
       name: admin
       password: admin
       roles: USER, ADMIN
+  messages:
+    cache-duration: PT1S # 1 second, see the ISO 8601 standard
+  thymeleaf:
+    cache: false
+  sleuth:
+    sampler:
+      probability: 1 # report 100% of traces
+  zipkin: # Use the "zipkin" Maven profile to have the Spring Cloud Zipkin dependencies
+    base-url: http://${ZIPKIN_HOST}:9411
+    enabled: true
+    locator:
+      discovery:
+        enabled: true
 
-# ===================================================================
-# To enable TLS in production, generate a certificate using:
-# keytool -genkey -alias JHipsterRegistry -storetype PKCS12 -keyalg RSA -keysize 2048 -keystore keystore.p12 -validity 3650
-#
-# You can also use Let's Encrypt:
-# https://maximilian-boehm.com/hp2121/Create-a-Java-Keystore-JKS-from-Let-s-Encrypt-Certificates.htm
-#
-# Then, modify the server.ssl properties so your "server" configuration looks like:
-#
-# server:
-#    port: 443
-#    ssl:
-#        key-store: classpath:config/tls/keystore.p12
-#        key-store-password: password
-#        key-store-type: PKCS12
-#        key-alias: jhipsterregistry
-#        # The ciphers suite enforce the security by deactivating some old and deprecated SSL cipher, this list was tested against SSL Labs (https://www.ssllabs.com/ssltest/)
-#        ciphers: TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 ,TLS_DHE_RSA_WITH_AES_128_GCM_SHA256 ,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384 ,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,TLS_DHE_RSA_WITH_AES_256_CBC_SHA,TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_256_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA,TLS_RSA_WITH_CAMELLIA_256_CBC_SHA,TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA,TLS_RSA_WITH_CAMELLIA_128_CBC_SHA
-# ===================================================================
 server:
   port: 8761
   compression:
@@ -70,8 +76,6 @@ server:
 # ===================================================================
 
 eureka:
-  instance:
-    prefer-ip-address: true
   client:
     service-url:
       defaultZone: http://admin:${spring.security.user.password}@localhost:8761/eureka/
@@ -87,6 +91,9 @@ jhipster:
     cache: # Used by the CachingHttpHeadersFilter
       timeToLiveInDays: 1461
   security:
+    client-authorization:
+      client-id: internal
+      client-secret: internal
     authentication:
       jwt:
         # The secret key should come from a Spring Cloud Config server, and not from this file
@@ -96,7 +103,9 @@ jhipster:
         token-validity-in-seconds: 86400
         token-validity-in-seconds-for-remember-me: 2592000
   mail: # specific JHipster mail property, for standard properties see MailProperties
-    base-url: http://my-server-url-to-change # Modify according to your server's URL
+    enabled: false
+    from: JHipsterRegistry@localhost
+    base-url: http://127.0.0.1:8761
   metrics:
     logs: # Reports metrics in the logs
       enabled: false
@@ -104,8 +113,8 @@ jhipster:
   logging:
     use-json-format: false # By default, logs are not in Json format
     logstash: # Forward logs to logstash over a socket, used by LoggingConfiguration
-      enabled: false
-      host: localhost
+      enabled: true
+      host: ${LOGSTASH_HOST}
       port: 5000
       queue-size: 512
 # ===================================================================

@@ -1,0 +1,8 @@
+spring:
+  profiles:
+    active: dev
+    include:
+      - swagger
+      - oauth2
+      - keycloak
+      - zipkin

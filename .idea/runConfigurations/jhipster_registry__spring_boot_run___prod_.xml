@@ -1,0 +1,56 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="jhipster-registry [spring-boot:run] (prod)" type="MavenRunConfiguration" factoryName="Maven">
+    <MavenSettings>
+      <option name="myGeneralSettings" />
+      <option name="myRunnerSettings">
+        <MavenRunnerSettings>
+          <option name="delegateBuildToMaven" value="false" />
+          <option name="environmentProperties">
+            <map>
+              <entry key="KEYCLOAK_BASE_URL" value="https://argosqs-vip.vsit.dand.de:8543" />
+              <entry key="REGISTRY_HOST" value="localhost" />
+              <entry key="REGISTRY_PEERS" value="http://admin:admin@localhost:8761/eureka" />
+              <entry key="REGISTRY_PORT" value="8761" />
+            </map>
+          </option>
+          <option name="jreName" value="#USE_PROJECT_JDK" />
+          <option name="mavenProperties">
+            <map />
+          </option>
+          <option name="passParentEnv" value="true" />
+          <option name="runMavenInBackground" value="true" />
+          <option name="skipTests" value="true" />
+          <option name="vmOptions" value="--illegal-access=warn" />
+        </MavenRunnerSettings>
+      </option>
+      <option name="myRunnerParameters">
+        <MavenRunnerParameters>
+          <option name="profiles">
+            <set />
+          </option>
+          <option name="goals">
+            <list>
+              <option value="spring-boot:run" />
+            </list>
+          </option>
+          <option name="pomFileName" value="pom.xml" />
+          <option name="profilesMap">
+            <map>
+              <entry key="prod" value="true" />
+              <entry key="swagger" value="true" />
+              <entry key="zipkin" value="true" />
+              <entry key="oauth2" value="true" />
+              <entry key="keycloak" value="true" />
+              <entry key="dev" value="false" />
+              <entry key="IDE" value="false" />
+              <entry key="webpack" value="false" />
+            </map>
+          </option>
+          <option name="resolveToWorkspace" value="true" />
+          <option name="workingDirPath" value="$PROJECT_DIR$" />
+        </MavenRunnerParameters>
+      </option>
+    </MavenSettings>
+    <method v="2" />
+  </configuration>
+</component>

@@ -1,11 +1,10 @@
 package io.github.jhipster.registry;
 
+import de.codecentric.boot.admin.server.config.EnableAdminServer;
+import io.github.jhipster.config.JHipsterConstants;
 import io.github.jhipster.registry.config.ApplicationProperties;
 import io.github.jhipster.registry.config.ConfigServerConfig;
 import io.github.jhipster.registry.config.DefaultProfileUtil;
-
-import io.github.jhipster.config.JHipsterConstants;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +29,7 @@ import java.util.Collection;
 @EnableConfigurationProperties({ApplicationProperties.class, ConfigServerConfig.class})
 @EnableDiscoveryClient
 @EnableZuulProxy
+@EnableAdminServer
 public class JHipsterRegistryApp implements InitializingBean {
 
     private static final Logger log = LoggerFactory.getLogger(JHipsterRegistryApp.class);

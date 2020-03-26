@@ -13,7 +13,7 @@
     <properties>
         <!-- Build properties -->
         <maven.version>3.3.9</maven.version>
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
         <node.version>v12.13.1</node.version>
         <npm.version>6.13.1</npm.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -28,6 +28,8 @@
         <!-- These remain empty unless the corresponding profile is active -->
         <profile.swagger />
         <profile.tls />
+        <profile.oauth2 />
+        <profile.keycloak />
 
         <!-- Dependency versions -->
         <jhipster-dependencies.version>3.0.7</jhipster-dependencies.version>
@@ -36,6 +38,15 @@
         <spring-boot.version>2.1.10.RELEASE</spring-boot.version>
         <archunit-junit5.version>0.12.0</archunit-junit5.version>
         <mapstruct.version>1.3.1.Final</mapstruct.version>
+
+        <jolokia.version>1.6.2</jolokia.version>
+        <eureka.consul.adapter>1.3.0</eureka.consul.adapter>
+        <spring.boot.reactor.netty>2.1.8.RELEASE</spring.boot.reactor.netty>
+        <reactor.netty>0.9.4.RELEASE</reactor.netty>
+        <netty>4.1.45.Final</netty>
+        <jackson>2.10.2</jackson>
+        <spring.boot.admin>2.1.5</spring.boot.admin>
+
         <!-- Plugin versions -->
         <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
@@ -66,6 +77,42 @@
         <!-- jhipster-needle-maven-property -->
     </properties>
 
+    <repositories>
+        <!-- repository>
+            <id>SiteOS-Group</id>
+            <name>SiteOS-Group</name>
+            <url>https://nexus.acm.siteos.de:8443/repository/SiteOS-Group</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>SiteOS-Snapshots</id>
+            <name>SiteOS-Snapshots</name>
+            <url>https://nexus.acm.siteos.de:8443/repository/SiteOS-Group</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository -->
+        <repository>
+            <id>oss.sonatype.org-snapshot</id>
+            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <!-- jhipster-needle-maven-repository -->
+    </repositories>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -80,22 +127,200 @@
     </dependencyManagement>
 
     <dependencies>
+
+        <!-- missing deps -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <!-- no provided to make jib:build happy -->
+            <!-- scope>provided</scope -->
+        </dependency>
+        <!-- we always include undertow to ensure a sane jib:build -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-undertow</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>io.github.jhipster</groupId>
             <artifactId>jhipster-framework</artifactId>
         </dependency>
 
+        <!-- allow JMX and jolokia (tp) -->
+        <dependency>
+            <groupId>org.jolokia</groupId>
+            <artifactId>jolokia-core</artifactId>
+            <version>${jolokia.version}</version>
+        </dependency>
+        <!-- allow prometheus to discover services with consul camouflage -->
+        <dependency>
+            <groupId>at.twinformatics</groupId>
+            <artifactId>eureka-consul-adapter</artifactId>
+            <version>${eureka.consul.adapter}</version>
+        </dependency>
+
+        <!-- fix for broken nexus jars (tp) -->
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>1.10.6</version>
+        </dependency>
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-starter-server</artifactId>
+            <version>${spring.boot.admin}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-server-cloud</artifactId>
+            <version>${spring.boot.admin}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+            <version>2.1.8.RELEASE</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>spring-boot-starter-reactor-netty</artifactId>
+                    <groupId>org.springframework.boot</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webflux</artifactId>
+            <version>5.1.9.RELEASE</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.projectreactor</groupId>
+                    <artifactId>reactor-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-core</artifactId>
+            <version>3.3.1.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>6.1.2.Final</version>
+        </dependency>
+        <dependency>
+            <artifactId>spring-boot-starter-reactor-netty</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <version>${spring.boot.reactor.netty}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.projectreactor.netty</groupId>
+                    <artifactId>reactor-netty</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor.netty</groupId>
+            <artifactId>reactor-netty</artifactId>
+            <version>${reactor.netty}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-handler-proxy</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-transport-native-epoll</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-handler-proxy</artifactId>
+            <version>${netty}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-transport-native-epoll</artifactId>
+            <version>${netty}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec</artifactId>
+            <version>${netty}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http</artifactId>
+            <version>${netty}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http2</artifactId>
+            <version>${netty}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-socks</artifactId>
+            <version>${netty}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-common</artifactId>
+            <version>${netty}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-resolver</artifactId>
+            <version>${netty}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-handler</artifactId>
+            <version>${netty}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-transport</artifactId>
+            <version>${netty}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-buffer</artifactId>
+            <version>${netty}</version>
+        </dependency>
+        <!--
+        Caused by: java.lang.ClassNotFoundException: com.fasterxml.jackson.databind.deser.std.NumberDeserializers$BigDecimalDeserializer
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:766)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:178)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:1077)
+	... 104 common frames omitted
+        -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-hppc</artifactId>
+            <version>${jackson}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-afterburner</artifactId>
+            <version>${jackson}</version>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
@@ -178,6 +403,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hibernate.validator</groupId>
+                    <artifactId>hibernate-validator</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -324,6 +555,11 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+                    <compilerArgs>
+                        <arg>-Xpkginfo:always</arg>
+                    </compilerArgs>
+                    <!-- setting this to 'false' makes compilation incremental (sic!) but is not reliable (tp) -->
+                    <useIncrementalCompilation>false</useIncrementalCompilation>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.springframework.boot</groupId>
@@ -426,11 +662,37 @@
                     Enable the line below to have remote debugging of your application on port 5005
                     <jvmArguments>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</jvmArguments>
                     -->
+                    <jvmArguments>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=50005</jvmArguments>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
+                <version>${jib-maven-plugin.version}</version>
+                <configuration>
+                    <from>
+                        <image>docker://adoptopenjdk:11-jre-openj9</image>
+                    </from>
+                    <to>
+                        <image>nexus.acm.siteos.de:5007/siteos/jhipster-registry:${env.APP_VERSION}</image>
+                    </to>
+                    <container>
+                        <entrypoint>
+                            <shell>bash</shell>
+                            <option>-c</option>
+                            <arg>chmod +x /entrypoint.sh &amp;&amp; sync &amp;&amp; /entrypoint.sh</arg>
+                        </entrypoint>
+                        <ports>
+                            <port>8761</port>
+                            <port>5701/udp</port>
+                        </ports>
+                        <environment>
+                            <SPRING_OUTPUT_ANSI_ENABLED>ALWAYS</SPRING_OUTPUT_ANSI_ENABLED>
+                            <JHIPSTER_SLEEP>0</JHIPSTER_SLEEP>
+                        </environment>
+                        <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
+                    </container>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -541,30 +803,6 @@
                     <groupId>com.google.cloud.tools</groupId>
                     <artifactId>jib-maven-plugin</artifactId>
                     <version>${jib-maven-plugin.version}</version>
-                    <configuration>
-                        <from>
-                            <image>adoptopenjdk:11-jre-hotspot</image>
-                        </from>
-                        <to>
-                            <image>jhipster-registry:latest</image>
-                        </to>
-                        <container>
-                            <entrypoint>
-                                <shell>bash</shell>
-                                <option>-c</option>
-                                <arg>chmod +x /entrypoint.sh &amp;&amp; sync &amp;&amp; /entrypoint.sh</arg>
-                            </entrypoint>
-                            <ports>
-                                <port>8761</port>
-                                <port>5701/udp</port>
-                            </ports>
-                            <environment>
-                                <SPRING_OUTPUT_ANSI_ENABLED>ALWAYS</SPRING_OUTPUT_ANSI_ENABLED>
-                                <JHIPSTER_SLEEP>0</JHIPSTER_SLEEP>
-                            </environment>
-                            <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
-                        </container>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>
@@ -734,6 +972,18 @@
             </properties>
         </profile>
         <profile>
+            <id>oauth2</id>
+            <properties>
+                <profile.swagger>,oauth2</profile.swagger>
+            </properties>
+        </profile>
+        <profile>
+            <id>keycloak</id>
+            <properties>
+                <profile.swagger>,keycloak</profile.swagger>
+            </properties>
+        </profile>
+        <profile>
             <id>webpack</id>
             <activation>
                 <file>
@@ -757,7 +1007,7 @@
                         <groupId>com.github.eirslett</groupId>
                         <artifactId>frontend-maven-plugin</artifactId>
                         <executions>
-                            <execution>
+                            <!-- execution>
                                 <id>install node and npm</id>
                                 <goals>
                                     <goal>install-node-and-npm</goal>
@@ -766,14 +1016,14 @@
                                     <nodeVersion>${node.version}</nodeVersion>
                                     <npmVersion>${npm.version}</npmVersion>
                                 </configuration>
-                            </execution>
-                            <execution>
+                            </execution -->
+                            <!-- execution>
                                 <id>npm install</id>
                                 <goals>
                                     <goal>npm</goal>
                                 </goals>
-                            </execution>
-                            <execution>
+                            </execution -->
+                            <!-- execution>
                                 <id>webpack build dev</id>
                                 <goals>
                                     <goal>npm</goal>
@@ -786,7 +1036,7 @@
                                     </environmentVariables>
                                     <npmInheritsProxyConfigFromMaven>false</npmInheritsProxyConfigFromMaven>
                                 </configuration>
-                            </execution>
+                            </execution -->
                         </executions>
                     </plugin>
                 </plugins>
@@ -855,7 +1105,7 @@
                         <groupId>com.github.eirslett</groupId>
                         <artifactId>frontend-maven-plugin</artifactId>
                         <executions>
-                            <execution>
+                            <!-- execution>
                                 <id>install node and npm</id>
                                 <goals>
                                     <goal>install-node-and-npm</goal>
@@ -864,8 +1114,8 @@
                                     <nodeVersion>${node.version}</nodeVersion>
                                     <npmVersion>${npm.version}</npmVersion>
                                 </configuration>
-                            </execution>
-                            <execution>
+                            </execution -->
+                            <!-- execution>
                                 <id>npm install</id>
                                 <goals>
                                     <goal>npm</goal>
@@ -873,8 +1123,8 @@
                                 <configuration>
                                     <arguments>install</arguments>
                                 </configuration>
-                            </execution>
-                            <execution>
+                            </execution -->
+                            <!-- execution>
                                 <id>webpack build test</id>
                                 <goals>
                                     <goal>npm</goal>
@@ -884,8 +1134,8 @@
                                     <arguments>run webpack:test</arguments>
                                     <npmInheritsProxyConfigFromMaven>false</npmInheritsProxyConfigFromMaven>
                                 </configuration>
-                            </execution>
-                            <execution>
+                            </execution -->
+                            <!-- execution>
                                 <id>webpack build prod</id>
                                 <goals>
                                     <goal>npm</goal>
@@ -898,7 +1148,7 @@
                                     </environmentVariables>
                                     <npmInheritsProxyConfigFromMaven>false</npmInheritsProxyConfigFromMaven>
                                 </configuration>
-                            </execution>
+                            </execution -->
                         </executions>
                     </plugin>
                     <plugin>
@@ -909,7 +1159,7 @@
             </build>
             <properties>
                 <!-- default Spring profiles -->
-                <spring.profiles.active>prod${profile.swagger}</spring.profiles.active>
+                <spring.profiles.active>prod${profile.swagger}${profile.oauth2}</spring.profiles.active>
             </properties>
         </profile>
         <profile>

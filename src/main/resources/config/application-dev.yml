@@ -24,6 +24,9 @@ spring:
     active: dev
     include:
       - swagger
+      - oauth2
+      - keycloak
+      - zipkin
       # Uncomment to activate TLS for the dev profile
       #- tls
   devtools:
@@ -72,8 +75,6 @@ server:
 # ===================================================================
 
 eureka:
-  instance:
-    prefer-ip-address: true
   client:
     service-url:
       defaultZone: http://admin:${spring.security.user.password}@localhost:8761/eureka/
@@ -106,6 +107,7 @@ jhipster:
         token-validity-in-seconds: 86400
         token-validity-in-seconds-for-remember-me: 2592000
   mail: # specific JHipster mail property, for standard properties see MailProperties
+    enabled: false
     from: JHipsterRegistry@localhost
     base-url: http://127.0.0.1:8761
   metrics:
