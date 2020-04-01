@@ -16,7 +16,8 @@ spring:
       server:
         name: jhipster-registry
         git:
-          uri: https://isgit.acm.siteos.de:943/SITEOS/microservice-configuration.git
+          # uri: https://isgit.acm.siteos.de:943/SITEOS/microservice-configuration.git
+          uri: ${GIT_CONFIG_SERVER_URI}
           # skipSslValidation: true
           username: su_siteos_microservice
           password: su_siteos_microservice

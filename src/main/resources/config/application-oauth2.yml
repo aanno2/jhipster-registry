@@ -18,15 +18,15 @@ spring:
             # scope:
         provider:
           kcqs_zap:
-            issuer-uri: ${KEYCLOAK_BASE_URL}/auth/realms/zap
+            issuer-uri: ${KEYCLOAK_BASE_URL}/auth/realms/amc
           kcqs_pbdb:
-            issuer-uri: ${KEYCLOAK_BASE_URL}/auth/realms/pbdb
+            issuer-uri: ${KEYCLOAK_BASE_URL}/auth/realms/master
       resourceserver:
         jwt:
           # Normal configuration with OAuth2ResourceServerConfigurer (tp)
-          issuer-uri: ${KEYCLOAK_BASE_URL}/auth/realms/zap
+          issuer-uri: ${KEYCLOAK_BASE_URL}/auth/realms/amc
           # TODO tp: Currently not used for JwtDecoder (tp)
-          # jwk-set-uri: ${KEYCLOAK_BASE_URL}/auth/realms/zap/protocol/openid-connect/certs
+          # jwk-set-uri: ${KEYCLOAK_BASE_URL}/auth/realms/amc/protocol/openid-connect/certs
       additional:
         jwt:
           # Additional configurations with MultiRealmOAuth2ResourceServerConfigurer (tp)
