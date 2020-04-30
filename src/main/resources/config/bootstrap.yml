@@ -7,23 +7,60 @@ spring:
   application:
     name: jhipster-registry
   profiles:
-    active: dev
-    include: composite
+    # The commented value for `active` can be replaced with valid Spring profiles to load.
+    # Otherwise, it will be filled in by maven when building the WAR file
+    # Either way, it can be overridden by `--spring.profiles.active` value passed in the commandline or `-Dspring.profiles.active` set in `JAVA_OPTS`
+    active: #spring.profiles.active#
   cloud:
     config:
       server:
-        bootstrap: true
-        composite:
-          - type: native
-            search-locations: file:./central-config
+        name: jhipster-registry
+        git:
+          # uri: https://isgit.acm.siteos.de:943/SITEOS/microservice-configuration.git
+          uri: ${GIT_CONFIG_SERVER_URI}
+          # skipSslValidation: true
+          username: su_siteos_microservice
+          password: su_siteos_microservice
+          #native:
+          #search-locations: file:./central-config
         prefix: /config
       fail-fast: true
       # name of the config server's property source (file.yml) that we want to use
       name: jhipster-registry
       profile: dev # profile(s) of the property source
       label: master # toggle to switch to a different version of the configuration as stored in git
-      # it can be set to any label, branch or commit of the configuration source Git repository
+      # it can be set to any label, branch or commit of the config source git repository
+      # config server enable/disable
+      # Hint tp: enabling config server for registry does _not_ work (maybe in 'composite' mode?)
+      enabled: false
+  boot:
+    admin:
+      # /admin is already taken use /sbadmin (tp)
+      context-path: /sbadmin
+      discovery:
+        converter:
+          management-context-path: /management
+        enabled: true
 
 info:
   project:
     version: #project.version#
+
+# allow bigger HTTP headers (useful with OAuth2/Openid/Keycloak) tp
+server:
+  max-http-header-size: 128000
+
+eureka:
+  client:
+    enabled: true
+    healthcheck:
+      enabled: true
+    # without 'fetch-registry: true' spring-boot-admin will NOT work (tp)
+    fetch-registry: true
+    # without 'register-with-eureka: true' spring-boot-admin can't see the registry (tp)
+    register-with-eureka: true
+    instance-info-replication-interval-seconds: 10
+    registry-fetch-interval-seconds: 10
+    service-url:
+      # defaultZone: http://admin:${spring.security.user.password:admin}@localhost:${server.port}/eureka/
+      defaultZone: ${REGISTRY_PEERS}

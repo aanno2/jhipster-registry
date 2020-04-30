@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE configuration>
 
-<configuration scan="true">
+<configuration scan="true" debug="true">
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"></statusListener>
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
 
-<!-- The FILE and ASYNC appenders are here as examples for a production configuration -->
-<!--
+    <!-- The FILE and ASYNC appenders are here as examples for a production configuration -->
+    <springProfile name="prod,qs,sm">
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>90</maxHistory>
+                <fileNamePattern>logFile.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+                <maxHistory>10</maxHistory>
+                <totalSizeCap>5GB</totalSizeCap>
         </rollingPolicy>
+            <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+                <maxFileSize>100MB</maxFileSize>
+            </triggeringPolicy>
         <encoder>
             <charset>utf-8</charset>
             <Pattern>%d %-5level [%thread] %logger{0}: %msg%n</Pattern>
@@ -22,10 +27,14 @@
         <appender-ref ref="FILE"/>
     </appender>
 
-    <root level="${logging.level.root}">
+        <root level="WARN">
         <appender-ref ref="ASYNC"/>
     </root>
--->
+    </springProfile>
+
+    <logger name="io.github.jhipster.registry" level="#logback.loglevel#"/>
+
+    <logger name="io.github.jhipster" level="DEBUG"/>
 
     <logger name="javax.activation" level="WARN"/>
     <logger name="javax.mail" level="WARN"/>
@@ -36,6 +45,17 @@
     <logger name="com.netflix.config.sources.URLConfigurationSource" level="ERROR"/>
     <logger name="com.netflix.discovery" level="INFO"/>
     <logger name="com.ryantenney" level="WARN"/>
+    <logger name="io.github.jhipster" level="INFO"/>
+    <logger name="io.github.jhipster.registry" level="INFO"/>
+    <logger name="de.codecentric.boot.admin" level="INFO"/>
+    <logger name="org.eclipse.jgit" level="INFO"/>
+    <logger name="reactor.core" level="INFO"/>
+    <logger name="io.netty" level="WARN"/>
+    <logger name="de.siteos.grundlagen.aop" level="WARN"/>
+    <logger name="io.github.jhipster.registry.aop" level="WARN"/>
+    <logger name="freemarker.cache" level="WARN"/>
+    <logger name="reactor.netty" level="WARN"/>
+    <logger name="io.github.jhipster.registry.service" level="INFO"/>
     <logger name="com.sun" level="WARN"/>
     <logger name="com.zaxxer" level="WARN"/>
     <logger name="io.undertow" level="WARN"/>
@@ -55,6 +75,9 @@
     <logger name="springfox.documentation.schema.property" level="ERROR"/>
     <logger name="sun.net.www" level="INFO"/>
     <logger name="sun.rmi.transport" level="WARN"/>
+    <logger name="com.netflix.eureka" level="INFO"/>
+    <logger name="com.netflix.discovery" level="WARN"/>
+    <logger name="org.apache.http.client.protocol.ResponseProcessCookies" level="ERROR"/>
     <!-- jhipster-needle-logback-add-log - JHipster will add a new log with level, Do not remove -->
 
     <!-- https://logback.qos.ch/manual/configuration.html#shutdownHook and https://jira.qos.ch/browse/LOGBACK-1090 -->
@@ -63,5 +86,11 @@
     <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
         <resetJUL>true</resetJUL>
     </contextListener>
+
+    <springProfile name="dev">
+        <root level="DEBUG">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
 
 </configuration>

@@ -18,12 +18,13 @@ spring:
   application:
     name: jhipster-registry
   jmx:
-    enabled: false
+    enabled: true
   main:
     allow-bean-definition-overriding: true
   mvc:
     favicon:
       enabled: false
+    # Hint tp: This is needed for all microservices to log into the registry/configserver
   security:
     user:
       name: admin
@@ -70,12 +71,18 @@ management:
     web:
       base-path: /management
       exposure:
-        include: ['configprops', 'env', 'health', 'info', 'jhimetrics', 'logfile', 'loggers', 'threaddump']
+        include: '*'
+        # include: ['configprops', 'env', 'health', 'info', 'jhimetrics', 'logfile', 'loggers', 'threaddump', 'prometheus']
+    jmx:
+      exposure:
+        include: '*'
   endpoint:
     health:
       show-details: when-authorized
       roles: 'ROLE_ADMIN'
     jhimetrics:
+      enabled: true
+    jolokia:
       enabled: true
   info:
     git:
@@ -102,6 +109,9 @@ management:
         request:
           autotime:
             enabled: true
+  server:
+    servlet:
+      context-path: /management
 
 server:
   port: 8761
@@ -135,6 +145,7 @@ eureka:
     status-page-url-path: ${management.endpoints.web.base-path}/info
     health-check-url-path: ${management.endpoints.web.base-path}/health
     metadata-map:
+      configPath: /config
       zone: primary # This is needed for the load balancer
       profile: ${spring.profiles.active}
       version: #project.version#
@@ -145,8 +156,10 @@ eureka:
     enabled: true
     healthcheck:
       enabled: true
-    fetch-registry: false
-    register-with-eureka: false
+    # without 'fetch-registry: true' spring-boot-admin will NOT work (tp)
+    fetch-registry: true
+    # without 'register-with-eureka: true' spring-boot-admin can't see the registry (tp)
+    register-with-eureka: true
     instance-info-replication-interval-seconds: 10
     registry-fetch-interval-seconds: 10
     service-url:

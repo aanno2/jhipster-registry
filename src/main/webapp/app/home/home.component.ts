@@ -50,7 +50,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe(account => {
         this.account = account;
-        if (!account || !this.isAuthenticated()) {
+        // we accept unauthenticated login tries as the user might not has the role 'ROLE_ADMIN'
+        if (!account /* || !this.isAuthenticated() */) {
           this.login();
         } else {
           this.refreshService.refreshReload$.pipe(takeUntil(this.unsubscribe$)).subscribe(() => this.populateDashboard());
