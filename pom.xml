@@ -26,6 +26,8 @@
         <!-- These remain empty unless the corresponding profile is active -->
         <profile.swagger />
         <profile.tls />
+        <profile.oauth2 />
+        <profile.keycloak />
 
         <!-- Dependency versions -->
         <jhipster-dependencies.version>3.6.0</jhipster-dependencies.version>
@@ -306,6 +308,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-Xpkginfo:always</arg>
+                    </compilerArgs>
+                    <!-- setting this to 'false' makes compilation incremental (sic!) but is not reliable (tp) -->
+                    <useIncrementalCompilation>false</useIncrementalCompilation>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -768,6 +777,18 @@
             </properties>
         </profile>
         <profile>
+            <id>oauth2</id>
+            <properties>
+                <profile.swagger>,oauth2</profile.swagger>
+            </properties>
+        </profile>
+        <profile>
+            <id>keycloak</id>
+            <properties>
+                <profile.swagger>,keycloak</profile.swagger>
+            </properties>
+        </profile>
+        <profile>
             <id>webpack</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
@@ -929,7 +950,7 @@
             </build>
             <properties>
                 <!-- default Spring profiles -->
-                <spring.profiles.active>prod${profile.swagger}</spring.profiles.active>
+                <spring.profiles.active>prod${profile.swagger}${profile.oauth2}</spring.profiles.active>
             </properties>
         </profile>
         <profile>

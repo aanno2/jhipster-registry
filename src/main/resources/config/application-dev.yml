@@ -24,6 +24,7 @@ spring:
     active: dev
     include:
       - swagger
+      - oauth2
       # Uncomment to activate TLS for the dev profile
       #- tls
   devtools:

@@ -22,7 +22,8 @@ export class LoginOAuth2Service {
     }
     // If you have configured multiple OIDC providers, then, you can update this URL to /login.
     // It will show a Spring Security generated login page with links to configured OIDC providers.
-    location.href = `//${location.hostname}${port}${contextPath}oauth2/authorization/oidc`;
+    // location.href = `//${location.hostname}${port}${contextPath}oauth2/authorization/oidc`;
+    location.href = `//${location.hostname}${port}${contextPath}login`;
   }
 
   logout(): Observable<any> {
