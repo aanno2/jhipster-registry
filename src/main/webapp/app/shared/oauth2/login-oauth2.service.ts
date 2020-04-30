@@ -9,7 +9,7 @@ export class LoginOAuth2Service {
   constructor(private http: HttpClient) {}
 
   login() {
-    let port = location.port ? ':' + location.port : '';
+    const port = location.port ? ':' + location.port : '';
     /*
     if (port === ':9000') {
       port = ':8761';
